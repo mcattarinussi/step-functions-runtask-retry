@@ -1,0 +1,25 @@
+{
+  "name": "step-functions-runtask-retry",
+  "version": "1.0.0",
+  "description": "demo project using complex retry logic with AWS step funcions and ECS runTask api",
+  "main": "null",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcattarinussi/step-functions-runtask-retry.git"
+  },
+  "keywords": [
+    "AWS",
+    "ecs",
+    "step-functions",
+    "fargate"
+  ],
+  "author": "Mattia Cattarinussi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mcattarinussi/step-functions-runtask-retry/issues"
+  },
+  "homepage": "https://github.com/mcattarinussi/step-functions-runtask-retry#readme"
+}
