@@ -4,6 +4,34 @@ Description: >-
   A demo project that shows how to implement complex retry logic when using the ECS runTask api in a step function.
 
 Resources:
+  AppEcsRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: sfn-runtask-retry-app
+  AppTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Cpu: 256
+      ExecutionRoleArn: !GetAtt AppTaskExecutionRole.Arn
+      Memory: 512
+      NetworkMode: awsvpc
+      RequiresCompatibilities: ['FARGATE']
+      ContainerDefinitions:
+        - Name: app
+          Essential: true
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AppEcsRepository}:latest
+  AppTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
   SfnRole:
     Type: AWS::IAM::Role
     Properties:
@@ -15,8 +43,6 @@ Resources:
               Service:
                 - !Sub states.${AWS::Region}.amazonaws.com
             Action: "sts:AssumeRole"
-      Path: /
-
   Sfn:
     Type: AWS::StepFunctions::StateMachine
     Properties:
