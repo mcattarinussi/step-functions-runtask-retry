@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: >-
+  A demo project that shows how to implement complex retry logic when using the ECS runTask api in a step function.
+
+Resources:
+  SfnRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - !Sub states.${AWS::Region}.amazonaws.com
+            Action: "sts:AssumeRole"
+      Path: /
+
+  Sfn:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      DefinitionString: |
+        {
+          "StartAt": "Dummy",
+          "States": {
+            "Dummy": {
+              "Type": "Wait",
+              "Seconds": 10,
+              "End": true
+            }
+          }
+        }
+      RoleArn: !GetAtt SfnRole.Arn
+      StateMachineName: runtask-complex-retry
