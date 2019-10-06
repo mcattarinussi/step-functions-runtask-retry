@@ -1,0 +1,5 @@
+module.exports = {
+    RETRIABLE: 'RETRIABLE',
+    WAIT_BEFORE_RETRY: 'WAIT_BEFORE_RETRY',
+    FATAL: 'FATAL',
+};

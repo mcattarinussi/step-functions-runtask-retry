@@ -15,7 +15,7 @@ stepFunctions:
 
 functions:
   processError:
-    handler: src/process-error.handler
+    handler: src/process-error/handler.handler
 
 resources:
   - ${file(./sls-include/ecs-task.yml)}
