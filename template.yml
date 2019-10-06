@@ -101,6 +101,15 @@ Resources:
                       }
                   }
                 },
+                "Catch": [ {
+                  "ErrorEquals": [ "States.TaskFailed" ],
+                  "ResultPath": "$.errorInfo",
+                  "Next": "RecoveryState"
+                }],
+                "End": true
+              },
+              "RecoveryState": {
+                "Type": "Pass",
                 "End": true
               }
             }
