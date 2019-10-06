@@ -1,3 +1,3 @@
 console.log('Task completed!')
 
-process.exit(0);
+process.exit(1);

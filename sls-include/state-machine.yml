@@ -1,8 +1,8 @@
 name: ecs-runtask-retry
 definition:
-  StartAt: RunAppTask
+  StartAt: RunECSTask
   States:
-    RunAppTask:
+    RunECSTask:
       Type: Task
       Resource: "arn:aws:states:::ecs:runTask.sync"
       Parameters:
@@ -21,5 +21,6 @@ definition:
           ResultPath: "$.error"
           Next: HandleError
     HandleError:
-      Type: Pass
+      Type: Task
+      Resource: { Fn::GetAtt: [errorHandler, Arn] }
       End: true

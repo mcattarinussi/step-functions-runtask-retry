@@ -13,5 +13,9 @@ stepFunctions:
   stateMachines:
     ecs-runtask-retry: ${file(./sls-include/state-machine.yml)}
 
+functions:
+  errorHandler:
+    handler: src/error-handler.handler
+
 resources:
   - ${file(./sls-include/ecs-task.yml)}
