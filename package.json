@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/mcattarinussi/step-functions-runtask-retry/issues"
   },
-  "homepage": "https://github.com/mcattarinussi/step-functions-runtask-retry#readme"
+  "homepage": "https://github.com/mcattarinussi/step-functions-runtask-retry#readme",
+  "devDependencies": {
+    "serverless-step-functions": "^2.10.0"
+  }
 }

@@ -1,0 +1,25 @@
+name: ecs-runtask-retry
+definition:
+  StartAt: RunAppTask
+  States:
+    RunAppTask:
+      Type: Task
+      Resource: "arn:aws:states:::ecs:runTask.sync"
+      Parameters:
+        LaunchType: FARGATE
+        TaskDefinition:
+          Ref: AppTaskDefinition
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            AssignPublicIp: ENABLED
+            Subnets:
+              - ${opt:subnetId}
+      End: true
+      Catch:
+        - ErrorEquals:
+            - States.ALL
+          ResultPath: "$.error"
+          Next: HandleError
+    HandleError:
+      Type: Pass
+      End: true

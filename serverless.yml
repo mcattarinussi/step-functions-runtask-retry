@@ -1,0 +1,17 @@
+service: step-functions-runtask-retry
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  region: eu-west-1
+  stage: dev
+
+plugins:
+  - serverless-step-functions
+
+stepFunctions:
+  stateMachines:
+    ecs-runtask-retry: ${file(./sls-include/state-machine.yml)}
+
+resources:
+  - ${file(./sls-include/ecs-task.yml)}
