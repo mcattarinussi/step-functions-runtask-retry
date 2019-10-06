@@ -1,5 +1,7 @@
 FROM node:10-alpine
 
-COPY src/app.js .
+WORKDIR /app
 
-ENTRYPOINT ["node", "app.js"]
+COPY src/app/. .
+
+ENTRYPOINT ["node", "index.js"]
