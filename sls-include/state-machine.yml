@@ -18,22 +18,28 @@ definition:
       Catch:
         - ErrorEquals:
             - States.ALL
-          ResultPath: "$.ECSTaskError"
+          ResultPath: $.ECSTaskError
           Next: ProcessError
     ProcessError:
       Type: Task
       Resource: { Fn::GetAtt: [processError, Arn] }
-      ResultPath: "$.errorState"
+      ResultPath: $.errorState
       Next: ErrorStateChoice
     ErrorStateChoice:
       Type: Choice
       Choices:
-      - Variable: "$.errorState.type"
-        StringEquals: "RETRIABLE_ERROR"
+      - Variable: $.errorState.type
+        StringEquals: RETRIABLE
         Next: RunECSTask
-      - Variable: "$.errorState.type"
-        StringEquals: "FATAL_ERROR"
-        Next: "FatalError"
+      - Variable: $.errorState.type
+        StringEquals: WAIT_BEFORE_RETRY
+        Next: WaitBeforeRetry
+      - Variable: $.errorState.type
+        StringEquals: FATAL
+        Next: FatalError
+    WaitBeforeRetry:
+      Type: Wait
+      SecondsPath: $.errorState.waitSeconds
+      Next: RunECSTask
     FatalError:
       Type: Fail
-
