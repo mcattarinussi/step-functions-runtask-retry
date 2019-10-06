@@ -3,6 +3,10 @@ Transform: "AWS::Serverless-2016-10-31"
 Description: >-
   A demo project that shows how to implement complex retry logic when using the ECS runTask api in a step function.
 
+Parameters:
+  SubnetId:
+    Type: String
+
 Resources:
   AppEcsRepository:
     Type: AWS::ECR::Repository
@@ -79,16 +83,27 @@ Resources:
   Sfn:
     Type: AWS::StepFunctions::StateMachine
     Properties:
-      DefinitionString: |
-        {
-          "StartAt": "Dummy",
-          "States": {
-            "Dummy": {
-              "Type": "Wait",
-              "Seconds": 10,
-              "End": true
+      DefinitionString:
+        Fn::Sub: |
+          {
+            "StartAt": "Run app",
+            "States": {
+              "Run app": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::ecs:runTask.sync",
+                "Parameters": {
+                  "LaunchType": "FARGATE",
+                  "TaskDefinition": "${AppTaskDefinition}",
+                  "NetworkConfiguration": {
+                      "AwsvpcConfiguration": {
+                        "AssignPublicIp": "ENABLED",
+                          "Subnets": ["${SubnetId}"]
+                      }
+                  }
+                },
+                "End": true
+              }
             }
           }
-        }
       RoleArn: !GetAtt SfnRole.Arn
       StateMachineName: runtask-complex-retry
