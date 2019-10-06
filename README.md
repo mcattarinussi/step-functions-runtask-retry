@@ -2,9 +2,9 @@
 
 A demo project that shows how to implement complex retry logic using the ECS runTask api in a step function.
 
-## Deploy cloudformation stack
+## Deploy
 
-    aws cloudformation deploy --template-file template.yaml --capabilities CAPABILITY_IAM --stack-name sfn-runtask-complex-retry SubnetId=<PUBLIC-SUBNET-ID>
+    serverless deploy --subnetId <PUBLIC-SUBNET-ID>
 
 ## Publish docker image to ECR
 
