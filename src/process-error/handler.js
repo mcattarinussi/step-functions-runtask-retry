@@ -3,15 +3,36 @@ const errorStates = require('./states');
 const MAX_RETRIES = 3;
 const RETRY_WAIT_SECONDS = 10;
 
+const APP_CONTAINER_NAME = 'app';
+
 const getErrorProcessor = taskError => ({
     'States.TaskFailed': taskFailedProcessor,
-    'ECS.AmazonECSException': () => { throw new Error('Not implemented') },
+    'ECS.AmazonECSException': ecsExceptionProcessor,
 }[taskError]) || defaultErrorProcessor;
 
+const ecsExceptionProcessor = () => { throw new Error('Not implemented yet') };
+const defaultErrorProcessor = () => errorStates.FATAL;
+
 const taskFailedProcessor = cause => {
-    // getContainer by name
-    // calculate errorState using ExitCode/Reason/LastStatus..
-    return errorStates.FATAL;
+    console.log(cause)
+    const container = cause.Containers && cause.Containers.find(
+        c => c.Name === APP_CONTAINER_NAME
+    );
+
+    if (!container) {
+        console.log(`container ${APP_CONTAINER_NAME} not found`);
+        return errorStates.FATAL;
+    }
+
+    if ([3, 4].includes(container.ExitCode)) {
+        // ItemNotFound, InvalidInput
+        return errorStates.FATAL;
+    } else if ([5, 6].includes(container.ExitCode)) {
+        // NetworkError, DBError
+        return errorStates.WAIT_BEFORE_RETRY;
+    }
+    // Unknown error
+    return errorStates.RETRIABLE;
 };
 
 module.exports.handler = async event => {
