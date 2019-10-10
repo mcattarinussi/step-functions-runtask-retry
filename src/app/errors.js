@@ -1,22 +1,14 @@
-class AppError extends Error {}
-AppError.prototype.code = 1;
+class UncaughtException extends Error { }
+UncaughtException.prototype.code = 1;
 
-class ItemNotFound extends AppError {}
-ItemNotFound.prototype.code = 3;
+class InvalidInput extends Error { }
+InvalidInput.prototype.code = 3;
 
-class InvalidInput extends AppError {}
-InvalidInput.prototype.code = 4;
-
-class NetworkError extends AppError {}
-NetworkError.prototype.code = 5;
-
-class DBError extends AppError {}
-DBError.prototype.code = 6;
+class NetworkError extends Error { }
+NetworkError.prototype.code = 4;
 
 module.exports = {
-    AppError,
-    ItemNotFound,
+    UncaughtException,
     InvalidInput,
     NetworkError,
-    DBError
 };

@@ -1,5 +1,5 @@
 module.exports = {
     RETRIABLE: 'RETRIABLE',
-    WAIT_BEFORE_RETRY: 'WAIT_BEFORE_RETRY',
+    TEMPORARY: 'TEMPORARY',
     FATAL: 'FATAL',
 };

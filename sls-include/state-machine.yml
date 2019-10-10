@@ -22,7 +22,7 @@ definition:
       Catch:
         - ErrorEquals:
             - States.ALL
-          ResultPath: $.ECSTaskError
+          ResultPath: $.taskError
           Next: ProcessError
     ProcessError:
       Type: Task
@@ -32,15 +32,15 @@ definition:
     ErrorStateChoice:
       Type: Choice
       Choices:
-      - Variable: $.errorState.type
-        StringEquals: RETRIABLE
-        Next: RunECSTask
-      - Variable: $.errorState.type
-        StringEquals: WAIT_BEFORE_RETRY
-        Next: WaitBeforeRetry
-      - Variable: $.errorState.type
-        StringEquals: FATAL
-        Next: FatalError
+        - Variable: $.errorState.type
+          StringEquals: RETRIABLE
+          Next: RunECSTask
+        - Variable: $.errorState.type
+          StringEquals: TEMPORARY
+          Next: WaitBeforeRetry
+        - Variable: $.errorState.type
+          StringEquals: FATAL
+          Next: FatalError
     WaitBeforeRetry:
       Type: Wait
       SecondsPath: $.errorState.waitSeconds
