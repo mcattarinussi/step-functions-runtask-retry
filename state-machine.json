@@ -1,0 +1,73 @@
+{
+    "StartAt": "RunECSTask",
+    "States": {
+        "RunECSTask": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::ecs:runTask.sync",
+            "Parameters": {
+                "LaunchType": "FARGATE",
+                "TaskDefinition": "arn:aws:ecs:eu-west-1:1234:task-definition/step-functions-runtask-retry-dev-AppTaskDefinition-13NET8A15HQS4:1",
+                "NetworkConfiguration": {
+                    "AwsvpcConfiguration": {
+                        "AssignPublicIp": "ENABLED",
+                        "Subnets": [
+                            "subnet-1234"
+                        ]
+                    }
+                },
+                "Overrides": {
+                    "ContainerOverrides": [
+                        {
+                            "Name": "app",
+                            "Command.$": "$.commands"
+                        }
+                    ]
+                }
+            },
+            "End": true,
+            "Catch": [
+                {
+                    "ErrorEquals": [
+                        "States.ALL"
+                    ],
+                    "ResultPath": "$.taskError",
+                    "Next": "ProcessError"
+                }
+            ]
+        },
+        "ProcessError": {
+            "Type": "Task",
+            "Resource": "arn:aws:lambda:eu-west-1:1234:function:step-functions-runtask-retry-dev-processError",
+            "ResultPath": "$.errorState",
+            "Next": "ErrorStateChoice"
+        },
+        "ErrorStateChoice": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Variable": "$.errorState.type",
+                    "StringEquals": "RETRIABLE",
+                    "Next": "RunECSTask"
+                },
+                {
+                    "Variable": "$.errorState.type",
+                    "StringEquals": "TEMPORARY",
+                    "Next": "WaitBeforeRetry"
+                },
+                {
+                    "Variable": "$.errorState.type",
+                    "StringEquals": "FATAL",
+                    "Next": "FatalError"
+                }
+            ]
+        },
+        "WaitBeforeRetry": {
+            "Type": "Wait",
+            "SecondsPath": "$.errorState.waitSeconds",
+            "Next": "RunECSTask"
+        },
+        "FatalError": {
+            "Type": "Fail"
+        }
+    }
+}
